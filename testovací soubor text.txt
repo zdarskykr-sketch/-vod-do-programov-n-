@@ -1,0 +1,1 @@
+test funkcnosti prevodu do morseovy abecedy a zpet 
