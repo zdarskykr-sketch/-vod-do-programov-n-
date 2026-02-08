@@ -4,52 +4,52 @@
 # Úvod do programování
 
 import turtle
-class KochVlocka:
-    def __init__(self, zelva_objekt, delka_strany, stupen): # funkce pro kontrolu stupně rekurze a inicializaci proměnných
-        self.t = zelva_objekt
-        self.delka_strany = delka_strany
+class KochFlake:
+    def __init__(self, turtle_obj, side_length, order): # initialize snowflake and checks and limites the depth to recursion
+        self.t = turtle_obj
+        self.side_length = side_length
         
-        if stupen > 5: # kontrola platnosti vstupu stupně rekurtze
-            print("Hodnota byla snížena na 5")
-            self.stupen = 5
-        elif stupen < 0:
-            print("Hodnota nemůže být menší než 0, nastavena na 0")
-            self.stupen = 0
+        if order > 5: # checks limits of recursion of input
+            print("Value was set to 5.")
+            self.order = 5
+        elif order < 0:
+            print("Value was set to 0.")
+            self.order = 0
         else:
-            self.stupen = stupen
+            self.order = order
 
-    def konch_posloupnost(self, delka, moment_stupen): # rekurzivní funkce kochovy posloupnosti, která vykreaslí jednu stranu vločky
-        if moment_stupen == 0:
-            self.t.forward(delka)
+    def konch_order(self, length, current_order): # Recursive method to draw one side of the Koch Snowflake (the curve).
+        if current_order == 0:
+            self.t.forward(length)
         else:
-            nova_delka = delka / 3
-            self.konch_posloupnost(nova_delka, moment_stupen - 1)
+            new_length = length / 3
+            self.konch_order(new_length, current_order - 1)
             self.t.left(60)
-            self.konch_posloupnost(nova_delka, moment_stupen - 1)
+            self.konch_order(new_length, current_order - 1)
             self.t.right(120)
-            self.konch_posloupnost(nova_delka, moment_stupen - 1)
+            self.konch_order(new_length, current_order - 1)
             self.t.left(60)
-            self.konch_posloupnost(nova_delka, moment_stupen - 1)
+            self.konch_order(new_length, current_order - 1)
     
-    def vlocka(self): # tato funkce pouze opakuje kochovu posloupnost třikrát, aby se uzavřela vločka
+    def flake(self): # closes the snowflake by repeating the curve three times and it centers the snowflake on the screen.
         self.t.penup()
-        self.t.goto(-self.delka_strany / 2, self.delka_strany / 3) # vycentrování vločky naobrazovce
+        self.t.goto(-self.side_length / 2, self.side_length / 3) # centering of the snowflake on the screen
         self.t.pendown()
 
         for _ in range(3):
-            self.konch_posloupnost(self.delka_strany, self.stupen)
+            self.konch_order(self.side_length, self.order)
             self.t.right(120)
 
-if __name__ == "__main__": # hlavní program provádějící interakci s uživatelem
+if __name__ == "__main__": # main method to run the program and get user input.
 
-    delka_strany = int(input("Zadejte délku strany vločky: "))  # uživatelský vstup pro délky strany
-    stupen = int(input("Zadejte stupeň vločky (1-5): "))        # uživatel si zvolí stupeň rekurze
-    rychlost = int(input("Zadejte rychlost kreslení (1-11): ")) # uživatel má volbu si zvolit rychlost kreslení želvy
+    side_length = int(input("Input the side length of the snowflake: "))  # user input for length of the side of the snowflake
+    order = int(input("Input the depth of recursion (0-5): "))            # user input for the depth of recursion
+    speed = int(input("Input the speed of drawing (1-11): "))             # user input for the speed fo drawing
     screen = turtle.Screen()
     t = turtle.Turtle()
-    screen.title("Kochova vločka")
-    t.speed(rychlost)
+    screen.title("Koch's Snowflake")
+    t.speed(speed)
 
-    moje_vlocka = KochVlocka(t, delka_strany, stupen)
+    moje_vlocka = KochFlake(t, side_length, order)
     moje_vlocka.vlocka()
     screen.exitonclick()

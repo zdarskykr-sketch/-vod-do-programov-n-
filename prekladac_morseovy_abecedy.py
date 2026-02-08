@@ -3,13 +3,12 @@
 # zimní semestr 2025/2026
 # Úvod do programování
 
-class MorsePrekladac:
+class MorseTranslator:
 
-    # třída umožňuje převod mezi morseovou abecedou a standartním textem a naopak.
-    # Kód zpracovává soubory obsahující tex nebo morseovu abecedu a ukládá výsledek do nového souboru jehož název zadává sám uživatel.
-
-    def __init__(self): # inicializace slovníku pro převod
-        self.abeceda: dict[str, str] = {
+    # class for translation between morse code and standart text.
+    # the input for the code is a string file and output is also a string file.
+    def __init__(self): # initialization of the dictionary for translation.
+        self.dictionary: dict[str, str] = {
             'A': '.-',      'B': '-...',      'C': '-.-.', 
             'D': '-..',      'E': '.',        'F': '..-.',
             'G': '--.',      'H': '....',     'I': '..', 
@@ -28,66 +27,66 @@ class MorsePrekladac:
             ':': '---...',   ' ': '/' 
         }
 
-        self.na_text_otoceny: dict[str, str] = {kod: znak for znak, kod in self.abeceda.items()} # obrácení slovníku pro převod z morseovy abecedy na text
+        self.to_reverse_text: dict[str, str] = {code: char for char, code in self.dictionary.items()} # reverse dictionary for reverse translation.
     
-    def na_morse(self, text: str) -> str: # pčevádí text na morseovu abecedu a neznámé znaky ignoruje
-        vysledek = []
-        text =text.upper()  # ochrana proti malým písmenům
+    def to_morse(self, text: str) -> str: # translates text to morse code and ignores unknown charakters.
+        result = []
+        text =text.upper()  # it transforms the text to uppercase to match the keys in the dictionary.
 
-        for znak in text:
-            if znak in self.abeceda:
-                vysledek.append(self.abeceda[znak])
+        for char in text:
+            if char in self.dictionary:
+                result.append(self.dictionary[char])
             else:
                 pass
 
-        return ' '.join(vysledek)
+        return ' '.join(result)
     
-    def na_text(self, m_k: str) -> str: # převádí morseovu abecedu na text a neznámé znaky ignoruje. Jednotlivé znaky musí být odděleny mezerou.
-        vysledek = []
-        kody =m_k.split(' ')
+    def to_text(self, m_k: str) -> str: # it transforms morse code to text and ignores unknown charakters.
+        result = []
+        codes =m_k.split(' ')
 
-        for kod in kody:
-            if kod in self.na_text_otoceny:
-                vysledek.append(self.na_text_otoceny[kod])
+        for code in codes:
+            if code in self.to_reverse_text:
+                result.append(self.to_reverse_text[code])
             else:
                 pass
-        return ''.join (vysledek)
+        return ''.join (result)
     
-    def zpracuj_soubor(self, vstupni_soubor: str, vystupni_soubor: str, prevod: int): # otevře vstupní soubor, provede jeho překlad dle volby uživatele a překlad uloží do nového souboru.
-        try:                                                          # Název souboru vybírá sám uživatel.
-            with open(vstupni_soubor, 'r',encoding = 'utf-8') as s:
-                obsah =s.read()
-            if prevod == 1:
-                preklad = self.na_morse(obsah)
+    def process_file(self, input_file: str, output_file: str, mode: int): # open the file, read the content, translate it and save the result to the output file. It also handles exceptions for file not found and other unexpected errors.
+        try:                                                          # the name of the output file is given by user.
+            with open(input_file, 'r',encoding = 'utf-8') as s:
+                content =s.read()
+            if mode == 1:
+                translate = self.to_morse(content)
 
-            elif prevod ==2:
-                preklad= self.na_text(obsah)
+            elif mode ==2:
+                translate = self.to_text(content)
             else:
-                print ("Musíš zadat 1 nebo 2.")
+                print ("You have to enter 1 or 2.")
                 return
-            with open (vystupni_soubor, 'w', encoding = 'utf-8') as s:
-                s.write(preklad)
-            print(f"Překlad uložen do {vystupni_soubor}.")
+            with open (output_file, 'w', encoding = 'utf-8') as s:
+                s.write(translate)
+            print(f"Translation saved to {output_file}.")
 
         except FileNotFoundError:
-            print (f"Soubor {vstupni_soubor} nebyl nalezen - zkus zadat celou cestu k souboru.")
+            print (f"File {input_file} not found - try entering the full path to the file.")
 
         except Exception as e:
             print(f"Neočekávaná chyba: {e}")
 
-if __name__ == "__main__": # hlavní program provádějící interakci s uživatelem.
+if __name__ == "__main__": # main program loop to get user input for file names and type of translation.
     while True:
-        prekladac = MorsePrekladac()
-        print("Pro ukončení programu zadejte místo názvu souboru 'end'.") # zadály uživatel 'end' program se ukončí.
-        vstupni_soubor = input("Zadejte název vstupního souboru (zadejte celou cestu k souboru): ") # uživatel zadává celou cestu k souboru.
-        if vstupni_soubor.lower() == 'end':
+        translator = MorseTranslator()
+        print("To end the program enter 'end' instead of a file name.") # if the user writes 'end' the program will end.
+        input_file = input("Enter full path to input file: ") # user inputs the the whole path to the input file.
+        if input_file.lower() == 'end':
             break
 
-        vystupni_soubor = input("Zadejte název výstupního souboru: ") # uživatel napíše název výstupního souboru.
+        output_file = input("Enter name of output file: ") # user inputs the name of output file.
 
         try:
-            prevod = int(input("Zadejte typ převodu (1. Text->Morse, 2. Morse->Text): ")) # uživatel volí směr převodu 
-            prekladac.zpracuj_soubor(vstupni_soubor, vystupni_soubor, prevod)
+            mode = int(input("Enter translation type (1. Text->Morse, 2. Morse->Text): ")) # user chooses the type of translation.
+            translator.process_file(input_file, output_file, mode)
         
         except ValueError:
-            print("neplatná hodnota pro typ převodu.")
+            print("Invalid value for translation type.")
